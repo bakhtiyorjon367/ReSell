@@ -1,8 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/resell-api/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/resell-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/resell-api",
+  "projects": {
+    "re-sell": {
+      "type": "application",
+      "root": "apps/resell-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/resell-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/resell-api/tsconfig.app.json"
+      }
+    },
+    "resell-batch": {
+      "type": "application",
+      "root": "apps/resell-batch",
+      "entryFile": "main",
+      "sourceRoot": "apps/resell-batch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/resell-batch/tsconfig.app.json"
+      }
+    }
   }
 }
