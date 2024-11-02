@@ -10,7 +10,7 @@
   "monorepo": true,
   "root": "apps/resell-api",
   "projects": {
-    "re-sell-api": {
+    "resell-api": {
       "type": "application",
       "root": "apps/resell-api",
       "entryFile": "main",
