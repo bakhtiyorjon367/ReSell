@@ -78,9 +78,9 @@ export class Member {
     @Field(() => Date)
     updatedAt:Date;
 
-    // //Token__________________
-    // @Field(()=>String, {nullable:true})
-    // accessToken?:string;
+    //Token__________________
+    @Field(()=>String, {nullable:true})
+    accessToken?:string;
 
     // /**aggregate **/
     // @Field(() => [MeLiked ], {nullable: true})
