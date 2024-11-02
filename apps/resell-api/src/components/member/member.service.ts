@@ -45,6 +45,13 @@ export class MemberService {
 
             response.accessToken = await this.authService.createToken(response);    // create ACCESSTOKEN
         return response;
-     }
+    }
+
+    public async updateMember():Promise<String>{
+        return "updateMember";
+    }
+
+    //=========ADMIN===============================================================================================================================================================
+    
 }
 
