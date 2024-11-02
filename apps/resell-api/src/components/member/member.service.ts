@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Member, Members } from '../../libs/dto/member/member';
-import { LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
+import { LoginInput, MemberInput, GetMembers, MembersInquiry } from '../../libs/dto/member/member.input';
 import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
@@ -29,7 +29,7 @@ export class MemberService {
             throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE)
         }
        
-    }
+    };
 
     public async login(input: LoginInput):Promise<Member>{
         const { memberNick, memberPassword} = input;
@@ -50,7 +50,7 @@ export class MemberService {
 
             response.accessToken = await this.authService.createToken(response);    // create ACCESSTOKEN
         return response;
-    }
+    };
 
     public async updateMember(memberId: ObjectId, input:MemberUpdate):Promise<Member>{
         const result: Member = await this.memberModel.findOneAndUpdate(
@@ -64,7 +64,7 @@ export class MemberService {
 
         return result;
 
-    }
+    };
 
     public async getMember(memberId: ObjectId, targetId: ObjectId):Promise<Member>{
         const search:T ={
@@ -87,11 +87,13 @@ export class MemberService {
                 await this.memberModel.findByIdAndUpdate(search, {$inc:{ memberViews: 1}}, {new:true}).exec();
                 targetMember.memberViews++;
             }
+            //meLiked
+            //meFollowed
         }
         return targetMember;
-    }
+    };
 
-    public async getMembers(memberId:ObjectId, input:MembersInquiry):Promise<Members>{
+    public async getMembers(memberId:ObjectId, input:GetMembers):Promise<Members>{
         const { text } = input.search;
         const match:T = { memberType: MemberType.USER, memberStatus: MemberStatus.ACTIVE };
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
@@ -114,12 +116,39 @@ export class MemberService {
         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         return result[0];
-    }
+    };
 
     //=========ADMIN===============================================================================================================================================================
     
-    public async getAllMembersByAdmin():Promise<string>{
-     return "done"
+    public async getAllMembersByAdmin(input:MembersInquiry):Promise<Members>{
+        const { memberStatus, memberType, text  } = input.search;
+        const match:T = {};
+        const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
+        
+        if(memberStatus) match.memberStatus = memberStatus;
+        if(memberType) match.memberType = memberType;
+        if(text){ match.memberNick = {$regex: new RegExp(text, "i")} };
+        console.log('match', match);
+
+        const result = await this.memberModel.aggregate([
+            {$match: match},
+            {$sort: sort},
+            {
+                $facet:{
+                    list: [{ $skip: (input.page -1)* input.limit }, { $limit: input.limit }],
+                    metaCounter:[{$count: 'total'}],
+                }
+            },
+        ]).exec();
+        if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0];
+    };
+
+    public async updateMemberByAdmin(input:MemberUpdate):Promise<Member>{
+        const result = await this.memberModel.findByIdAndUpdate({_id:input._id}, input, {new: true});
+        if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        
+        return result;
     }
 }
 
