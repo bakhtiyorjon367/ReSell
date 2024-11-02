@@ -19,7 +19,7 @@ export class Member {
     @Field (() => MemberAuthType)
     memberAuthType: MemberAuthType;
 
-   
+    @Field (() => String)
     memberPhone:string;
 
     @Field(()=> String)
