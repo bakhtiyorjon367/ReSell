@@ -1,8 +1,8 @@
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { UseGuards } from '@nestjs/common';
-import { Member } from '../../libs/dto/member/member';
+import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
@@ -64,6 +64,14 @@ export class MemberResolver {
         console.log("Query: getMember ");
         const targetId = shapeIntoMongoObjectId(input);
         return await this.memberService.getMember(memberId, targetId);
+    }
+
+    @UseGuards(WithoutGuard)
+    @Query(() => Members)
+    public async getMembers(@Args('input') input:MembersInquiry, @AuthMember('_id')  memberId: ObjectId
+    ):Promise<Members>{
+        console.log("Query: getAgents ");
+        return await this.memberService.getMembers(memberId, input);
     }
      //=========ADMIN===============================================================================================================================================================
     

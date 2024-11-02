@@ -91,19 +91,17 @@ export class Member {
 }//____________________________________________________________________________________________________
 
 
-// @ObjectType()
-// export class TotalCounter {
-//     @Field(() => Int, {nullable:true})
-//     total:number
-// }//____________________________________________________________________________________________________
+@ObjectType()
+export class TotalCounter {
+    @Field(() => Int, {nullable:true})
+    total:number
+}
 
+@ObjectType()
+export class Members {
+    @Field(() => [Member])
+    list:Member[];
 
-// @ObjectType()
-// export class Members {
-//     @Field(() => [Member])
-//     list:Member[];
-
-//     @Field(() => [TotalCounter], {nullable:true})
-//     metaCounter:TotalCounter[];
-// }//____________________________________________________________________________________________________
-
+    @Field(() => [TotalCounter], {nullable:true})
+    metaCounter:TotalCounter[];
+}
