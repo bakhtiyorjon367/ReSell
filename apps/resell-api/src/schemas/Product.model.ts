@@ -71,7 +71,7 @@ const ProductSchema = new Schema(
 			ref: 'Member',
 		},
 	},
-	{ timestamps: true, collection: 'properties' },
+	{ timestamps: true, collection: 'products' },
 );
 
 ProductSchema.index({ productCategory: 1, productLocation: 1, productTitle: 1, productPrice: 1 }, { unique: true });
