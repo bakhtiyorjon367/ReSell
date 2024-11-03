@@ -70,6 +70,18 @@ const ProductSchema = new Schema(
 			required: true,
 			ref: 'Member',
 		},
+
+		soldAt: {
+			type: Date,
+		},
+
+		deletedAt: {
+			type: Date,
+		},
+
+		manufacturedAt: {
+			type: Date,
+		},
 	},
 	{ timestamps: true, collection: 'products' },
 );
