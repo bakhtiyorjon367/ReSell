@@ -61,8 +61,6 @@ export class ProductUpdate {
 
     deletedAt?:Date;
 
-    reservedAt?:Date;
-
     @IsOptional()
     @Field(() => Date, {nullable:true})
     manufacturedAt?:Date;

@@ -2,15 +2,16 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { MemberService } from '../member/member.service';
-import { ProductInput } from '../../libs/dto/product/product.input';
-import { Product } from '../../libs/dto/product/product';
-import { Message } from '../../libs/enums/common.enum';
+import { ProductInput, ProductsInquiry } from '../../libs/dto/product/product.input';
+import { Product, Products } from '../../libs/dto/product/product';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { ProductStatus } from '../../libs/enums/product.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { ProductUpdate } from '../../libs/dto/product/product.update';
 import moment from 'moment';
+import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class ProductService {
@@ -90,4 +91,58 @@ export class ProductService {
         
         return result;
     }/*_____________________________________________________________________________________________________________________*/
+
+
+    public async getProducts(memberId:ObjectId, input:ProductsInquiry):Promise<Products> {
+        const match:T ={ productStatus: ProductStatus.ACTIVE};
+        const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+        this.shapeMatchQuery (match, input);
+        console.log('match', match);
+
+        const result = await this.productModel.
+        aggregate([
+            {$match: match},
+            {$sort: sort},
+            {
+                $facet: {
+                    list: [
+                        {$skip: (input.page - 1)* input.limit},
+                        {$limit: input.limit},
+                        //meLiked
+                        lookupMember,
+                        {$unwind: '$memberData'}
+                    ],
+                    metaCounter: [{$count: 'total'}],
+                },
+            },
+        ]).exec();
+        if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        return result[0];
+    }
+    private shapeMatchQuery(match:T, input:ProductsInquiry):void {
+        const {
+            memberId,
+            locationList,
+            typeList,
+            pricesRange,
+            options,
+            text,
+        } = input.search;
+        if(memberId) match.memberId = shapeIntoMongoObjectId(memberId);
+        if(locationList && locationList.length) match.productLocation = {$in: locationList};
+        if(typeList  && typeList.length) match.pproductType = {$in: typeList};
+
+        if(pricesRange) match.productPrice = {$gte: pricesRange.start, $lte: pricesRange.end};
+      
+        if(text) match.productTitle = {$regex: new RegExp(text, 'i')};
+        if(options) {
+            match['$or'] = options.map((ele) => {
+                return { [ele]: true};
+            });
+        }
+    }/*_____________________________________________________________________________________________________________________*/
+
+
 }

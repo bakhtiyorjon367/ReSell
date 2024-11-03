@@ -5,6 +5,15 @@ import { T } from './types/common';
 
 export const availableMemberSorts =['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank' ]
 
+export const availableOptions = ['productBarter', 'productSharing'];
+export const availableProductSorts = [
+    'createdAt',
+    'updatedAt',
+    'productLikes',
+    'productyViews',
+    'productPrice'
+]
+
  // IMAGE CONFIGURATION 
  export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
  export const getSerialForImage = (filename: string) => {
@@ -15,3 +24,12 @@ export const availableMemberSorts =['createdAt', 'updatedAt', 'memberLikes', 'me
 export const shapeIntoMongoObjectId = (target:any) => {
     return typeof target ==='string' ? new ObjectId(target) : target;
 };
+
+export const lookupMember = {
+    $lookup: {
+        from: 'members',
+        localField: 'memberId',
+        foreignField: '_id',
+        as: 'memberData'
+    }
+}
