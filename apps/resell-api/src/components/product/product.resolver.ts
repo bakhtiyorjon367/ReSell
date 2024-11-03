@@ -5,7 +5,7 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Product, Products } from '../../libs/dto/product/product';
-import { ProductInput, ProductsInquiry } from '../../libs/dto/product/product.input';
+import { ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
 import { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { WithoutGuard } from '../auth/guards/without.guard';
@@ -61,5 +61,16 @@ export class ProductResolver {
     ):Promise<Products>{
         console.log("Query: getProducts");
         return await this.productService.getProducts(memberId, input);
+    }
+
+    @Roles(MemberType.USER)
+    @UseGuards(RolesGuard)
+    @Query((returns) => Products)
+    public async getUserProducts(
+        @Args('input') input:UserProductsInquiry, 
+        @AuthMember('_id')  memberId: ObjectId 
+    ):Promise<Products>{
+        console.log("Query: getUserProducts");
+        return await this.productService.getUserProducts(memberId, input);
     }
 }

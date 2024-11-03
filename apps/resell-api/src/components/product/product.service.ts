@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { MemberService } from '../member/member.service';
-import { ProductInput, ProductsInquiry } from '../../libs/dto/product/product.input';
+import { ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
 import { Product, Products } from '../../libs/dto/product/product';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
@@ -144,5 +144,37 @@ export class ProductService {
         }
     }/*_____________________________________________________________________________________________________________________*/
 
+
+    public async getUserProducts(memberId:ObjectId, input:UserProductsInquiry):Promise<Products> {
+        const {productStatus} =input.search;
+        if(productStatus === ProductStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
+
+        const match: T = {
+            memberId: memberId,
+            propertyStatus: productStatus ?? {$ne: ProductStatus.DELETE},
+        };
+        const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+        const result = await this.productModel.
+        aggregate([
+            {$match: match},
+            {$sort: sort},
+            {
+                $facet: {
+                    list: [
+                        {$skip: (input.page - 1)* input.limit},
+                        {$limit: input.limit},
+                        //meLiked
+                        lookupMember,
+                        {$unwind: '$memberData'}
+                    ],
+                    metaCounter: [{$count: 'total'}],
+                },
+            },
+        ]).exec();
+        if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        return result[0];
+    }/*_____________________________________________________________________________________________________________________*/
 
 }

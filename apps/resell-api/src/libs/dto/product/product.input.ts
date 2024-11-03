@@ -153,39 +153,39 @@ export class UserProductsInquiry{
    search: APISearch;
 }
 
-@InputType()
-class ALPISearch{
-   @IsOptional()
-   @Field(() => ProductStatus, {nullable: true})
-   productStatus?: ProductStatus;
+// @InputType()
+// class ALPISearch{
+//    @IsOptional()
+//    @Field(() => ProductStatus, {nullable: true})
+//    productStatus?: ProductStatus;
    
-   @IsOptional()
-   @Field(() => [ProductLocation], {nullable: true})
-   productLocationList?: ProductLocation[];
-}
+//    @IsOptional()
+//    @Field(() => [ProductLocation], {nullable: true})
+//    productLocationList?: ProductLocation[];
+// }
 
-@InputType()
-export class AllProductsInquiry{
-   @IsNotEmpty()
-   @Min(1)
-   @Field(() => Int)
-   page:number;
+// @InputType()
+// export class AllProductsInquiry{
+//    @IsNotEmpty()
+//    @Min(1)
+//    @Field(() => Int)
+//    page:number;
 
-   @IsNotEmpty()
-   @Min(1)
-   @Field(() => Int)
-   limit:number;
+//    @IsNotEmpty()
+//    @Min(1)
+//    @Field(() => Int)
+//    limit:number;
 
-   @IsOptional()
-   @IsIn(availableProductSorts)
-   @Field(() => String, {nullable: true})
-   sort?:string;
+//    @IsOptional()
+//    @IsIn(availableProductSorts)
+//    @Field(() => String, {nullable: true})
+//    sort?:string;
 
-   @IsOptional()
-   @Field(() => Direction, {nullable: true})
-   direction?:Direction;
+//    @IsOptional()
+//    @Field(() => Direction, {nullable: true})
+//    direction?:Direction;
 
-   @IsNotEmpty()
-   @Field(() => ALPISearch)
-   search: ALPISearch;
-}
+//    @IsNotEmpty()
+//    @Field(() => ALPISearch)
+//    search: ALPISearch;
+// }
