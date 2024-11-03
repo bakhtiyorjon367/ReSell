@@ -74,6 +74,10 @@ const ProductSchema = new Schema(
 		soldAt: {
 			type: Date,
 		},
+		
+		reservedAt: {
+			type: Date,
+		},
 
 		deletedAt: {
 			type: Date,

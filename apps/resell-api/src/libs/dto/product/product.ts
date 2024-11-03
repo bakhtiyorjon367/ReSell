@@ -63,6 +63,9 @@ export class Product {
     @Field(() => Date)
     updatedAt:Date;
 
+    @Field(() => Date)
+    reservedAt:Date;
+
     // from Aggregation
 //   @Field(() => [MeLiked], {nullable:true})
 //   meLiked?: MeLiked[];

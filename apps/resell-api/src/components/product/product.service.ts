@@ -9,6 +9,8 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ProductStatus } from '../../libs/enums/product.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
+import { ProductUpdate } from '../../libs/dto/product/product.update';
+import moment from 'moment';
 
 @Injectable()
 export class ProductService {
@@ -26,7 +28,7 @@ export class ProductService {
             console.log("Error: productService.model",err.message);
             throw new BadRequestException(Message.CREATE_FAILED);
         }
-    }
+    }/*_____________________________________________________________________________________________________________________*/
 
     public async getProduct(memberId:ObjectId, productId: ObjectId):Promise<Product> {
         const search: T = {
@@ -62,5 +64,30 @@ export class ProductService {
             {new: true})
             .exec();
 
-    }
+    }/*_____________________________________________________________________________________________________________________*/
+
+    public async updateProduct(memberId:ObjectId, input:ProductUpdate):Promise<Product> {
+        let { productStatus, soldAt, deletedAt} = input;
+        const search: T = {
+            _id: input._id,
+            memberId: memberId,
+            productStatus: [
+                ProductStatus.ACTIVE,
+                ProductStatus.RESERVED,
+                ProductStatus.SOLD
+            ],
+        };
+
+        if(productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
+        else if(productStatus === ProductStatus.DELETE) deletedAt = moment().toDate();
+
+        const result = await this.productModel.findOneAndUpdate(search, input, { new: true}).exec();
+        if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+        if(deletedAt){
+                await this.memberService.memberStatsEditior({_id: memberId, targetKey: 'memberProduct', modifier:-1});
+        }
+        
+        return result;
+    }/*_____________________________________________________________________________________________________________________*/
 }
