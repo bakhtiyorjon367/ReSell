@@ -63,6 +63,13 @@ export class Product {
     @Field(() => Date)
     updatedAt:Date;
 
+    // from Aggregation
+//   @Field(() => [MeLiked], {nullable:true})
+//   meLiked?: MeLiked[];
+
+  @Field(() => Member, {nullable: true})
+    memberData?: Member;
+
 }
 
 @ObjectType()
