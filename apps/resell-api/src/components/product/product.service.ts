@@ -10,7 +10,7 @@ import { ProductStatus } from '../../libs/enums/product.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { ProductUpdate } from '../../libs/dto/product/product.update';
-import moment from 'moment';
+import * as moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class ProductService {
             productStatus: [
                 ProductStatus.ACTIVE,
                 ProductStatus.RESERVED,
-                ProductStatus.SOLD
+                ProductStatus.SOLD,
             ],
         };
 
@@ -223,6 +223,14 @@ export class ProductService {
                 await this.memberService.memberStatsEditior({_id: result.memberId, targetKey: 'memberProducts', modifier:-1});
         }
         
+        return result;
+    }/*_____________________________________________________________________________________________________________________*/
+
+    public async removeProductByAdmin(productId:ObjectId):Promise<Product> {
+        const search : T = {_id: productId, productStatus: ProductStatus.DELETE};
+        const result = await this.productModel.findOneAndDelete(search).exec();
+        if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
         return result;
     }/*_____________________________________________________________________________________________________________________*/
 
