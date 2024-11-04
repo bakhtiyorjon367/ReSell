@@ -7,5 +7,6 @@ import LikeSchema from '../../schemas/Like.model';
     imports:[ MongooseModule.forFeature([{name: 'Like', schema: LikeSchema}])
   ],
     providers: [LikeService],
+    exports:[LikeService],
 })
 export class LikeModule {}

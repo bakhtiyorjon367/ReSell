@@ -10,12 +10,16 @@ import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class MemberService {
     constructor(@InjectModel ('Member') private readonly memberModel: Model<Member>,
         private authService: AuthService,
         private viewService: ViewService,
+        private likeService: LikeService,
     ) {}
 
     public async signup(input:MemberInput):Promise<Member>{
@@ -29,7 +33,7 @@ export class MemberService {
             throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE)
         }
        
-    };
+    };/*____________________________________________________________________________________________________*/
 
     public async login(input: LoginInput):Promise<Member>{
         const { memberNick, memberPassword} = input;
@@ -50,7 +54,8 @@ export class MemberService {
 
             response.accessToken = await this.authService.createToken(response);    // create ACCESSTOKEN
         return response;
-    };
+    };/*____________________________________________________________________________________________________*/
+
 
     public async updateMember(memberId: ObjectId, input:MemberUpdate):Promise<Member>{
         const result: Member = await this.memberModel.findOneAndUpdate(
@@ -64,7 +69,8 @@ export class MemberService {
 
         return result;
 
-    };
+    };/*____________________________________________________________________________________________________*/
+
 
     public async getMember(memberId: ObjectId, targetId: ObjectId):Promise<Member>{
         const search:T ={
@@ -91,7 +97,8 @@ export class MemberService {
             //meFollowed
         }
         return targetMember;
-    };
+    };/*____________________________________________________________________________________________________*/
+
 
     public async getMembers(memberId:ObjectId, input:GetMembers):Promise<Members>{
         const { text } = input.search;
@@ -116,6 +123,24 @@ export class MemberService {
         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         return result[0];
+    };/*____________________________________________________________________________________________________*/
+
+
+    public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId):Promise<Member>{
+        const target:Member = await this.memberModel.findOne({_id:likeRefId, memberStatus: MemberStatus.ACTIVE});
+        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input:LikeInput ={
+            memberId:memberId,
+            likeRefId:likeRefId,
+            likeGroup:LikeGroup.MEMBER
+        };
+        let modifier:number = await this.likeService.toggleLike(input);
+        const result = this.memberStatsEditior({_id:likeRefId, targetKey:'memberLikes', modifier:modifier});
+
+        if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        
+        return result;
     };
 
     //=========ADMIN===============================================================================================================================================================
@@ -142,7 +167,8 @@ export class MemberService {
         ]).exec();
         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
-    };
+    };/*____________________________________________________________________________________________________*/
+
 
     public async updateMemberByAdmin(input:MemberUpdate):Promise<Member>{
         const result = await this.memberModel.findByIdAndUpdate({_id:input._id}, input, {new: true});
