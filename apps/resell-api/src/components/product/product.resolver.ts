@@ -23,7 +23,7 @@ export class ProductResolver {
         @Args('input') input:ProductInput, 
         @AuthMember('_id')  memberId: ObjectId 
     ):Promise<Product>{
-        console.log("Mutation: createPProduct");
+        console.log("Mutation: createProduct");
         input.memberId = memberId;
 
         return await this.productService.createProduct(input);
@@ -79,11 +79,19 @@ export class ProductResolver {
     @Roles(MemberType.ADMIN)
     @UseGuards(RolesGuard)
     @Query((returns) => Products)
-    public async getAllPProductsByAdmin(
+    public async getAllProductsByAdmin(
         @Args('input') input:AllProductsInquiry, 
         @AuthMember('_id')  memberId: ObjectId 
     ):Promise<Products>{
         console.log("Query: getAllProductsByAdmin");
         return await this.productService.getAllProductsByAdmin(input);
+    }
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation((returns) => Product)
+    public async updateProductByAdmin(@Args('input') input:ProductUpdate):Promise<Product>{
+        console.log("Mutation: updateProductByAdmin");
+        return await this.productService.updateProductByAdmin(input);
     }
 }
