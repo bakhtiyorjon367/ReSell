@@ -46,6 +46,11 @@ const ProductSchema = new Schema(
 			default: 0,
 		},
 
+		productComments: {
+			type: Number,
+			default: 0,
+		},
+
 		productImages: {
 			type: [String],
 			required: true,

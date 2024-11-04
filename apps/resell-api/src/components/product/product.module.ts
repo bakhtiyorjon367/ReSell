@@ -13,6 +13,7 @@ import { MemberModule } from '../member/member.module';
     ViewModule,
     MemberModule,
   ],
-  providers: [ProductResolver, ProductService]
+  providers: [ProductResolver, ProductService],
+  exports: [ProductService]
 })
 export class ProductModule {}
