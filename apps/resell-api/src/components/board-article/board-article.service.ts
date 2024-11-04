@@ -11,6 +11,9 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 
 @Injectable()
@@ -19,6 +22,7 @@ export class BoardArticleService {
     private  boardArticleModel:Model<BoardArticle>,
     private  memberService:MemberService,
     private  viewService: ViewService,
+    private likeService: LikeService,
     ) {}
 
 
@@ -115,6 +119,23 @@ export class BoardArticleService {
         ]).exec();
         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
+    }/*_____________________________________________________________________________________________________________________*/
+
+    public async likeTargetArticle(memberId: ObjectId, likeRefId: ObjectId):Promise<BoardArticle>{
+        const target:BoardArticle = await this.boardArticleModel.findOne({_id:likeRefId, articleStatus: BoardArticleStatus.ACTIVE});
+        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input:LikeInput ={
+            memberId:memberId,
+            likeRefId:likeRefId,
+            likeGroup:LikeGroup.ARTICLE
+        };
+        let modifier:number = await this.likeService.toggleLike(input);
+        const result = this.boardArticleStatsEditior({_id:likeRefId, targetKey:'articleLikes', modifier:modifier});
+
+        if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        
+        return result;
     }/*_____________________________________________________________________________________________________________________*/
 
     /*ADMIN */
