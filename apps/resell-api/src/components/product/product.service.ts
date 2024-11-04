@@ -56,17 +56,9 @@ export class ProductService {
 
         targetProduct.memberData = await this.memberService.getMember(null, targetProduct.memberId);
         return targetProduct;
-    }
-    public async productStatsEditor (input: StatisticModifier):Promise<Product>{
-        const { _id, targetKey, modifier} = input;
-        return await this.productModel.findByIdAndUpdate(
-            _id, 
-            {$inc: {[targetKey]:modifier}}, 
-            {new: true})
-            .exec();
-
     }/*_____________________________________________________________________________________________________________________*/
 
+ 
     public async updateProduct(memberId:ObjectId, input:ProductUpdate):Promise<Product> {
         let { productStatus, soldAt, deletedAt} = input;
         const search: T = {
@@ -234,4 +226,13 @@ export class ProductService {
         return result;
     }/*_____________________________________________________________________________________________________________________*/
 
+    public async productStatsEditor (input: StatisticModifier):Promise<Product>{
+        const { _id, targetKey, modifier} = input;
+        return await this.productModel.findByIdAndUpdate(
+            _id, 
+            {$inc: {[targetKey]:modifier}}, 
+            {new: true})
+            .exec();
+
+    }
 }
