@@ -4,7 +4,7 @@ import * as path from 'path';
 import { T } from './types/common';
 
 export const availableMemberSorts =['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank' ]
-
+export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews']
 export const availableOptions = ['productBarter', 'productSharing'];
 export const availableProductSorts = [
     'createdAt',
