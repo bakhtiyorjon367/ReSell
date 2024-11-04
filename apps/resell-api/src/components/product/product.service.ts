@@ -12,12 +12,16 @@ import { ViewService } from '../view/view.service';
 import { ProductUpdate } from '../../libs/dto/product/product.update';
 import * as moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class ProductService {
     constructor(@InjectModel ('Product') private readonly productModel: Model<Product>,
        private memberService: MemberService,
        private viewService: ViewService,
+       private likeService: LikeService,
     ){}
 
     public async createProduct(input:ProductInput):Promise<Product> {
@@ -168,6 +172,24 @@ export class ProductService {
 
         return result[0];
     }/*_____________________________________________________________________________________________________________________*/
+
+    public async likeTargetProduct(memberId: ObjectId, likeRefId: ObjectId):Promise<Product>{
+        const target:Product = await this.productModel.findOne({_id:likeRefId, productStatus: ProductStatus.ACTIVE});
+        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input:LikeInput ={
+            memberId:memberId,
+            likeRefId:likeRefId,
+            likeGroup:LikeGroup.PRODUCT
+        };
+        let modifier:number = await this.likeService.toggleLike(input);
+        const result = this.productStatsEditor({_id:likeRefId, targetKey:'productLikes', modifier:modifier});
+
+        if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        
+        return result;
+    }/*_____________________________________________________________________________________________________________________*/
+
 
     public async getAllProductsByAdmin(input:AllProductsInquiry):Promise<Products> {
         const {productStatus, productLocationList} =input.search;
