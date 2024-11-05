@@ -13,10 +13,11 @@ import { BoardArticleModule } from './board-article/board-article.module';
     MemberModule, 
     AuthModule, 
     ProductModule, 
-    CommentModule, 
+    BoardArticleModule,
     LikeModule, 
     ViewModule, 
+    CommentModule,
     FollowModule, 
-    BoardArticleModule]
+  ]
 })
 export class ComponentsModule {}
