@@ -5,7 +5,7 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Product, Products } from '../../libs/dto/product/product';
-import { AllProductsInquiry, ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
+import { AllProductsInquiry, OrdinaryInquiry, ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
 import { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { WithoutGuard } from '../auth/guards/without.guard';
@@ -73,6 +73,16 @@ export class ProductResolver {
     ):Promise<Products>{
         console.log("Query: getUserProducts");
         return await this.productService.getUserProducts(memberId, input);
+    }
+
+    @UseGuards(AuthGuard)
+    @Query((returns) => Products)
+    public async getFavorites(
+        @Args('input') input:OrdinaryInquiry, 
+        @AuthMember('_id')  memberId: ObjectId 
+    ):Promise<Products>{
+        console.log("Query: getFavorites");
+        return await this.productService.getFavorites(memberId, input);
     }
     
     @UseGuards(AuthGuard)

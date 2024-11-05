@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { MemberService } from '../member/member.service';
-import { AllProductsInquiry, ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
+import { AllProductsInquiry, OrdinaryInquiry, ProductInput, ProductsInquiry, UserProductsInquiry } from '../../libs/dto/product/product.input';
 import { Product, Products } from '../../libs/dto/product/product';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
@@ -143,7 +143,10 @@ export class ProductService {
         }
     }/*_____________________________________________________________________________________________________________________*/
 
-
+    public async getFavorites(memberId:ObjectId, input:OrdinaryInquiry):Promise<Products>{
+        return await this.likeService.getFavoriteProducts(memberId,input);
+    }/*_____________________________________________________________________________________________________________________*/
+    
     public async getUserProducts(memberId:ObjectId, input:UserProductsInquiry):Promise<Products> {
         const {productStatus} =input.search;
         if(productStatus === ProductStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
