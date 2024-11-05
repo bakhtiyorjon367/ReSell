@@ -34,10 +34,10 @@ export class MemberResolver {
 
     @UseGuards(AuthGuard)
     @Query(() => String)
-    public async checkAuth(@AuthMember('memberNick') memberNick:string
+    public async checkAuth(@AuthMember() input:Member
     ): Promise<string>{
         console.log("Query: checkAuth ");
-        return `Hi ${memberNick})`;
+        return `Hi ${input.memberNick}), your ID ${input._id}`;
     };
 
     @Roles(MemberType.ADMIN, MemberType.USER)
