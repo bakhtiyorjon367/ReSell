@@ -11,7 +11,7 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { ProductUpdate } from '../../libs/dto/product/product.update';
 import * as moment from 'moment';
-import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookUpAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeService } from '../like/like.service';
@@ -108,7 +108,7 @@ export class ProductService {
                     list: [
                         {$skip: (input.page - 1)* input.limit},
                         {$limit: input.limit},
-                        //meLiked
+                        lookUpAuthMemberLiked(memberId),//meLiked
                         lookupMember,
                         {$unwind: '$memberData'}
                     ],
