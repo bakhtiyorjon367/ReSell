@@ -52,23 +52,6 @@ export const lookupFollowerData = {
         as: 'followerData'
     }
 }
-export const lookupFavorite = {
-    $lookup: {
-        from: 'members',
-        localField: 'favoriteProperty.memberId',
-        foreignField: '_id',
-        as: 'favoriteProperty.memberData'
-    }
-}
-
-export const lookupVisit = {
-    $lookup: {
-        from: 'members',
-        localField: 'visitedProperty.memberId',
-        foreignField: '_id',
-        as: 'visitedProperty.memberData'
-    }
-}
 
 export const lookUpAuthMemberLiked = (memberId:T, targetRefId: string = '$_id') => {
     return {
@@ -97,42 +80,6 @@ export const lookUpAuthMemberLiked = (memberId:T, targetRefId: string = '$_id') 
                 }
             ],
             as:'meLiked'
-        }
-    }
-};
-
-interface LookUpAuthMemberFollowed {
-    followerId:T,
-    followingId:string
-}
-export const lookUpAuthMemberFollowed = (input:LookUpAuthMemberFollowed) => {
-    const { followerId, followingId } = input;
-    return {
-        $lookup:{
-            from: 'follows',
-            let: {
-                localFollowerId: followerId,
-                localFollowingId: followingId,
-                localMyFavorite: true
-            },
-            pipeline: [
-                {
-                    $match:{
-                        $expr: {
-                            $and: [{$eq:['$followerId','$$localFollowerId']}, { $eq:['$followingId', '$$localFollowingId']}],
-                        },
-                    },
-                },
-                {
-                    $project:{
-                        _id: 0,
-                        followerId: 1,
-                        followingId: 1,
-                        myFollowing: '$$localMyFavorite',
-                    }
-                }
-            ],
-            as:'meFollowed'
         }
     }
 };
