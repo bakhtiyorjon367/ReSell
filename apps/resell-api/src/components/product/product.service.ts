@@ -145,8 +145,12 @@ export class ProductService {
 
     public async getFavorites(memberId:ObjectId, input:OrdinaryInquiry):Promise<Products>{
         return await this.likeService.getFavoriteProducts(memberId,input);
-    }/*_____________________________________________________________________________________________________________________*/
+    }
     
+    public async getVisited(memberId:ObjectId, input:OrdinaryInquiry):Promise<Products>{
+        return await this.viewService.getVisitedProducts(memberId,input);
+    }/*_____________________________________________________________________________________________________________________*/
+
     public async getUserProducts(memberId:ObjectId, input:UserProductsInquiry):Promise<Products> {
         const {productStatus} =input.search;
         if(productStatus === ProductStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);

@@ -84,6 +84,16 @@ export class ProductResolver {
         console.log("Query: getFavorites");
         return await this.productService.getFavorites(memberId, input);
     }
+
+    @UseGuards(AuthGuard)
+    @Query((returns) => Products)
+    public async getVisited(
+        @Args('input') input:OrdinaryInquiry, 
+        @AuthMember('_id')  memberId: ObjectId 
+    ):Promise<Products>{
+        console.log("Query: getVisited");
+        return await this.productService.getVisited(memberId, input);
+    }
     
     @UseGuards(AuthGuard)
     @Mutation(() => Product)
