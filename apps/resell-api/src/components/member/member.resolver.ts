@@ -62,7 +62,9 @@ export class MemberResolver {
 
     @UseGuards(WithoutGuard)
     @Query(() => Member)
-    public async getMember(@Args('memberId') input:string, @AuthMember('_id') memberId: ObjectId
+    public async getMember(
+        @Args('memberId') input:string, 
+        @AuthMember('_id') memberId: ObjectId
     ): Promise<Member>{
         console.log("Query: getMember ");
         const targetId = shapeIntoMongoObjectId(input);
@@ -71,7 +73,9 @@ export class MemberResolver {
 
     @UseGuards(WithoutGuard)
     @Query(() => Members)
-    public async getAllMembers(@Args('input') input:GetMembers, @AuthMember('_id')  memberId: ObjectId
+    public async getAllMembers(
+        @Args('input') input:GetMembers, 
+        @AuthMember('_id')  memberId: ObjectId
     ):Promise<Members>{
         console.log("Query: getAllMembers ");
         return await this.memberService.getMembers(memberId, input);
