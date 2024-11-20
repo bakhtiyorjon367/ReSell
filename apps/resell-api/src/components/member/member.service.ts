@@ -45,9 +45,9 @@ export class MemberService {
             .findOne({memberNick:memberNick})
             .select("+memberPassword")
             .exec();
-            if(!response || response.memberStatus === MemberStatus.DELETED){
+            if(!response || response.memberStatus === MemberStatus.DELETE){
                 throw new InternalServerErrorException(Message.NO_MEMBER_NICK)
-            }else if(response.memberStatus === MemberStatus.BLOCKED){
+            }else if(response.memberStatus === MemberStatus.BLOCK){
                 throw new InternalServerErrorException(Message.BLOCKED_USER)
             }
 
@@ -80,7 +80,7 @@ export class MemberService {
         const search:T ={
             _id:targetId,
             memberStatus:{
-               $in:[MemberStatus.ACTIVE,MemberStatus.BLOCKED]
+               $in:[MemberStatus.ACTIVE,MemberStatus.BLOCK]
             } 
         };
         const targetMember = await this.memberModel.findOne(search).exec();

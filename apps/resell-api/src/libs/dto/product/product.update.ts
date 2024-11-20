@@ -57,6 +57,8 @@ export class ProductUpdate {
     @Field(() => String, {nullable: true})
     memberId?: ObjectId;
 
+    reservedAt?: Date;
+
     soldAt?:Date;
 
     deletedAt?:Date;

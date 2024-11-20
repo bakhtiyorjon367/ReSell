@@ -13,7 +13,7 @@ export class ResellBatchController {
     this.logger.debug("Batch Server Ready");
   }
 
-  @Cron("00 00 01 * * *", {name:BATCH_ROLLBACK})
+  @Cron("01 * * * * *", {name:BATCH_ROLLBACK})
   public async batchRollback(){
     try{
       this.logger["context"] = BATCH_ROLLBACK;
@@ -26,7 +26,7 @@ export class ResellBatchController {
     }
   }
 
-  @Cron("20 00 01 * * *", {name:BATCH_TOP_PRODUCTS})
+  @Cron("20 * * * * *", {name:BATCH_TOP_PRODUCTS})
   public async batchTopProduts(){
     try{
       this.logger["context"] = BATCH_TOP_PRODUCTS;
@@ -38,7 +38,7 @@ export class ResellBatchController {
     }
   }
 
-  @Cron("40 00 01 * * *", {name:BATCH_ACTIVE_USERS})
+  @Cron("40 * * * * *", {name:BATCH_ACTIVE_USERS})
   public async batchActiveUsers(){
     try{
       this.logger["context"] = BATCH_ACTIVE_USERS;

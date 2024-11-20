@@ -8,8 +8,8 @@ registerEnumType(MemberType, {
 
 export enum MemberStatus {
    ACTIVE = 'ACTIVE',
-   BLOCKED = 'BLOCKED',
-   DELETED = 'DELETED',
+   BLOCK = 'BLOCK',
+   DELETE = 'DELETE',
 }
 registerEnumType(MemberStatus,{
     name: 'MemberStatus'});

@@ -27,7 +27,7 @@ export class ProductService {
     public async createProduct(input:ProductInput):Promise<Product> {
         try{
             const result = await this.productModel.create(input);  
-            await this.memberService.memberStatsEditior({_id:result.memberId, targetKey:'memberProduct', modifier:1}); //increase memberProperty
+            await this.memberService.memberStatsEditior({_id:result.memberId, targetKey:'memberProduct', modifier:1}); //increase memberProduct
             return result;
         }catch(err){
             console.log("Error: productService.model",err.message);
@@ -93,7 +93,7 @@ export class ProductService {
 
 
     public async getProducts(memberId:ObjectId, input:ProductsInquiry):Promise<Products> {
-        const match:T ={ productStatus: ProductStatus.ACTIVE};
+        const match:T = {productStatus: { $ne: ProductStatus.DELETE }}
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
         this.shapeMatchQuery (match, input);
@@ -128,14 +128,18 @@ export class ProductService {
             pricesRange,
             options,
             text,
+            productSharing,
         } = input.search;
         if(memberId) match.memberId = shapeIntoMongoObjectId(memberId);
         if(locationList && locationList.length) match.productLocation = {$in: locationList};
-        if(typeList  && typeList.length) match.pproductType = {$in: typeList};
-
+        if(typeList  && typeList.length) match.productCategory = {$in: typeList};
         if(pricesRange) match.productPrice = {$gte: pricesRange.start, $lte: pricesRange.end};
-      
         if(text) match.productTitle = {$regex: new RegExp(text, 'i')};
+        if (productSharing === true) {
+            match.productSharing = true;
+        } else if (productSharing === false) {
+            match.productSharing = false;
+        }
         if(options) {
             match['$or'] = options.map((ele) => {
                 return { [ele]: true};
@@ -157,10 +161,10 @@ export class ProductService {
 
         const match: T = {
             memberId: memberId,
-            propertyStatus: productStatus ?? {$ne: ProductStatus.DELETE},
+            productStatus: productStatus ?? {$ne: ProductStatus.DELETE},
         };
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
-
+        console.log('match-->',match)
         const result = await this.productModel.
         aggregate([
             {$match: match},
@@ -170,7 +174,7 @@ export class ProductService {
                     list: [
                         {$skip: (input.page - 1)* input.limit},
                         {$limit: input.limit},
-                        //meLiked
+                        lookUpAuthMemberLiked(memberId),//meLiked
                         lookupMember,
                         {$unwind: '$memberData'}
                     ],

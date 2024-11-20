@@ -34,6 +34,9 @@ export class Product {
     @Field(() => Int)
     productLikes: number;
 
+    @Field(() => String)
+    productComments: number;
+
     @Field(() => Int)
     productRank: number;
 
@@ -54,6 +57,9 @@ export class Product {
 
     @Field(() => Date, {nullable:true})
     soldAt?:Date;
+
+    @Field(() => Date, {nullable:true})
+    reservedAt?:Date;
 
     @Field(() => Date, {nullable:true})
     deletedAt?:Date;

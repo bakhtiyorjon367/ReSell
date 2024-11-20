@@ -1,24 +1,20 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-// export enum ServiceType {
-// 	PARTTIME = 'PARTTIME',
-// 	CAR = 'CAR',
-// 	HOUSE = 'HOUSE',
-// 	SELLMYSTUFF = 'SELLMYSTUFF'
-// }
-// registerEnumType(ServiceType, {
-// 	name: 'PropertyType',
-// });
-//___________________________________________
 export enum ProductCategory {
-	DIGITAL =  'DIGITAL',
-	INTERIOR = 'INTERIOR',
+	ELECTRONICS =  'ELECTRONICS',
+	FURNITURE = 'FURNITURE',
+	HOMEandGARDEN = 'HOMEandGARDEN',
+	BABYandKIDS = 'BABYandKIDS',
 	WOMEN= 'WOMEN',
 	MEN = 'MEN',
-	READING = 'READING',
-	SPORTS ='SPORTS',
-	FOOD = 'FOOD',
+	HEALTHandBEAUTY ='HEALTHandBEAUTY',
+	SPORTandOUTDOOR = 'SPORTandOUTDOOR',
+	GAMEandHOBBY ='GAMEandHOBBY',
+	BOOKandMUSIC = 'BOOKandMUSIC',
+	ANIMAL = 'ANIMAL',
+	ART = 'ART',
 	OTHER = 'OTHER',
+	WANTED = 'WANTED',
 }
 registerEnumType(ProductCategory, {
 	name: 'ProductCategory',

@@ -11,7 +11,8 @@ export const availableProductSorts = [
     'updatedAt',
     'productLikes',
     'productyViews',
-    'productPrice'
+    'productPrice',
+    'productRank'
 ];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
 

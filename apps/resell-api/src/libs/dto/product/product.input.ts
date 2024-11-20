@@ -85,6 +85,10 @@ class PISearch{
    options?: string[];
 
    @IsOptional()
+   @Field(() => Boolean, { nullable: true })
+   productSharing?: boolean;
+
+   @IsOptional()
    @Field(() => PricesRange, {nullable: true})
    pricesRange?:PricesRange;
 
