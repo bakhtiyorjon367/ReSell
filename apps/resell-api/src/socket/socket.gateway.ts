@@ -25,7 +25,6 @@ export class SocketGateway implements OnGatewayInit{
   private summaryClient:number = 0;
   private clientAuthMap = new Map<WebSocket, Member>();
   private messagesList: MessagePayload[]= [];
-
   constructor( private authService:AuthService){}
 
   @WebSocketServer()
@@ -49,7 +48,6 @@ export class SocketGateway implements OnGatewayInit{
     const authMember = await this.retrieveAuth(req);
     this.summaryClient++;
     this.clientAuthMap.set(client, authMember);
-
     const clientNick: string = authMember?.memberNick ?? 'Guest';
     this.logger.verbose(`Connection [${clientNick}] &  total: [${this.summaryClient}]`);
 
