@@ -25,7 +25,7 @@ export class NoticeResolver {
     ):Promise<Notice>{
         console.log("Mutation: createNotice");
         input.memberId = memberId;
-
+        console.log('input-->', input);
         return await this.noticeService.createNotice(input);
     }
 
@@ -39,6 +39,17 @@ export class NoticeResolver {
         console.log('Mutation: noticeUpdate');
         input._id = shapeIntoMongoObjectId(input._id);
         return await this.noticeService.updateNotice(memberId, input);
+    }
+
+    @UseGuards(WithoutGuard)
+    @Query((returns) => Notice)
+    public async getNotice(
+        @Args('noticeId') input:String, 
+        @AuthMember('_id')  memberId: ObjectId 
+    ):Promise<Notice>{
+        console.log("Query: getNotice");
+        const noticeId = shapeIntoMongoObjectId(input);
+        return await this.noticeService.getNotice(memberId, noticeId);
     }
 
     @UseGuards(WithoutGuard)

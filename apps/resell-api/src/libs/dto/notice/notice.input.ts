@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
-import { NoticeCategory, NoticeStatus } from "../../enums/notice.enum";
+import { FAQCategory, NoticeCategory, NoticeStatus } from "../../enums/notice.enum";
 import { ObjectId } from "mongoose";
 import { IsNotEmpty, IsOptional, Min } from "class-validator";
 import { Direction } from "../../enums/common.enum";
@@ -12,13 +12,21 @@ export class NoticeInput {
     @Field(() => NoticeCategory)
     noticeCategory: NoticeCategory;
 
+    @IsOptional()
+    @Field(() => FAQCategory, {nullable: true})
+    faqCategory?: FAQCategory;
+
     @IsNotEmpty()
     @Field(() => String)
     noticeTitle:String;
 
-    @IsNotEmpty()
-    @Field(() => String)
-    noticeContent:String;
+    @IsOptional()
+    @Field(() => String, {nullable: true})
+    noticeContent?:String;
+
+    @IsOptional()
+    @Field(() => String, {nullable: true})
+    noticeEventDate?:String;
 
     memberId: ObjectId;
 }
@@ -33,6 +41,10 @@ class NSearch {
     @IsOptional()
     @Field(() => NoticeCategory, {nullable: true})
     noticeCategory?: NoticeCategory;
+
+    @IsOptional()
+    @Field(() => FAQCategory, {nullable: true})
+    faqCategory?: FAQCategory;
 }
 
 @InputType()

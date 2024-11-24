@@ -32,8 +32,16 @@ export class NoticeService {
         return result;
     }
 
+    public async getNotice(memberId:ObjectId, noticeId:ObjectId):Promise<Notice>{
+        const search:T= { _id:noticeId }
+        const result = await this.noticeModel.findOne(search).exec();
+        if(!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        console.log('notice', result)
+        return result;
+    }
+
     public async getNotices(memberId:ObjectId, input:NoticesInquiry):Promise<Notices>{
-       const {noticeStatus, noticeCategory } = input.search;
+       const {noticeStatus, noticeCategory, faqCategory } = input.search;
        const match:T = {};
         const sort: { [key: string]: 1 | -1 } = {
             createdAt: 1, 
@@ -41,6 +49,7 @@ export class NoticeService {
 
         if(noticeStatus) match.noticeStatus = noticeStatus;
         if(noticeCategory) match.noticeCategory = noticeCategory;
+        if(faqCategory) match.faqCategory = faqCategory;
 
         const result = await this.noticeModel.aggregate([
             {$match:match},
@@ -53,6 +62,7 @@ export class NoticeService {
             },
         ]).exec();
         if(!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        console.log(result[0])
         return result[0];
 
     }

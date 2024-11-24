@@ -29,5 +29,9 @@ export class NoticeUpdate {
 
     @IsOptional()
     @Field(() => String, {nullable: true})
+    noticeEventDate?:String;
+
+    @IsOptional()
+    @Field(() => String, {nullable: true})
     memberId?: ObjectId;
 }
