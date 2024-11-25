@@ -7,11 +7,15 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
 import { lookUpAuthMemberFollowed, lookUpAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
 
 @Injectable()
 export class FollowService {
     constructor(@InjectModel("Follow") private readonly followModel: Model<Follower | Following>,
-    private readonly memberService: MemberService
+    private readonly memberService: MemberService,
+    private notificationService:NotificationService,
 ){}
 
     public async subscribe(followerId: ObjectId, followingId: ObjectId):Promise<Follower>{
@@ -26,6 +30,18 @@ export class FollowService {
 
         await this.memberService.memberStatsEditior({_id:followerId, targetKey:'memberFollowings', modifier:1});
         await this.memberService.memberStatsEditior({_id:followingId, targetKey:'memberFollowers', modifier:1});
+
+        const notification:NotificationInput= {
+            notificationType: NotificationType.FOLLOW,
+            notificationGroup: NotificationGroup.MEMBER,
+            notificationTitle: 'You have new follower',
+            authorId: followerId,
+            receiverId: followingId,
+            productId: null,
+            articleId: null
+        };
+            await this.notificationService.createNotification(notification);
+       
 
         return result;
     };/*____________________________________________________________________________________________________*/
@@ -55,7 +71,14 @@ export class FollowService {
 
         await this.memberService.memberStatsEditior({ _id: followerId, targetKey: 'memberFollowings', modifier: -1 });
         await this.memberService.memberStatsEditior({ _id: followingId, targetKey: 'memberFollowers', modifier: -1 });
-
+        
+        const input = {
+            authorId:followerId, 
+            receiverId:followingId, 
+            productId:null,
+        }
+        await this.notificationService.deleteNotification(input);
+    
         return result;
     };/*____________________________________________________________________________________________________*/
 

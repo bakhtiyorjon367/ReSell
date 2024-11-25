@@ -33,8 +33,8 @@ export class Notification{
     @Field(() => String, {nullable:true})
     productId?:ObjectId
 
-    @Field(() => String)
-    articleId:ObjectId
+    @Field(() => String, {nullable:true})
+    articleId?:ObjectId
 
     @Field(() => Date)
 	createdAt: Date;

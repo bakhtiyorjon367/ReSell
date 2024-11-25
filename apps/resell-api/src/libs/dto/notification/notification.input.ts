@@ -42,7 +42,14 @@ export class NotificationInput{
 }
 
 @InputType()
-export class NotificationInquiry {
+class NISearch {
+	@IsOptional()
+	@Field(() => NotificationStatus, { nullable: true })
+	notificationStatus?: NotificationStatus;
+}
+
+@InputType()
+export class NotificationsInquiry {
    @IsNotEmpty()
    @Min(1)
    @Field(() => Int)
@@ -60,4 +67,8 @@ export class NotificationInquiry {
    @IsOptional()
    @Field(() => Direction, { nullable: true })
    direction?: Direction;
+
+   @IsNotEmpty()
+   @Field(() => NISearch)
+	search: NISearch;
 }
