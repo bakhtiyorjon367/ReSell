@@ -15,6 +15,9 @@ import { lookUpAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeService } from '../like/like.service';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class ProductService {
@@ -22,6 +25,7 @@ export class ProductService {
        private memberService: MemberService,
        private viewService: ViewService,
        private likeService: LikeService,
+       private notificationService:NotificationService,
     ){}
 
     public async createProduct(input:ProductInput):Promise<Product> {
@@ -188,7 +192,7 @@ export class ProductService {
     }/*_____________________________________________________________________________________________________________________*/
 
     public async likeTargetProduct(memberId: ObjectId, likeRefId: ObjectId):Promise<Product>{
-        const target:Product = await this.productModel.findOne({_id:likeRefId, productStatus: ProductStatus.ACTIVE});
+        const target:Product = await this.productModel.findOne({_id:likeRefId});
         if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         const input:LikeInput ={
@@ -198,10 +202,34 @@ export class ProductService {
         };
         let modifier:number = await this.likeService.toggleLike(input);
         const result = this.productStatsEditor({_id:likeRefId, targetKey:'productLikes', modifier:modifier});
-
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         
+        const receiverId =  await this.getMemberId(input.likeRefId)
+        const notification:NotificationInput= {
+            notificationType: NotificationType.LIKE,
+            notificationGroup: NotificationGroup.PRODUCT,
+            notificationTitle: 'Someone liked your product',
+            authorId: memberId,
+            receiverId: receiverId,
+            productId: likeRefId,
+            articleId: null
+        };
+        if(modifier === 1){
+            await this.notificationService.createNotification(notification);
+        }else{
+            const input = {
+                authorId:memberId, 
+                receiverId:receiverId, 
+                productId:likeRefId}
+            await this.notificationService.deleteNotification(input);
+        }
         return result;
+    }
+    public async getMemberId (productId:ObjectId):Promise<ObjectId>{
+        const result = await this.productModel.findOne({_id:productId});
+
+        if(!result) throw new InternalServerErrorException(Message.BLOCKED_USER);
+        return result.memberId;
     }/*_____________________________________________________________________________________________________________________*/
 
 
@@ -267,8 +295,8 @@ export class ProductService {
         return await this.productModel.findByIdAndUpdate(
             _id, 
             {$inc: {[targetKey]:modifier}}, 
-            {new: true})
-            .exec();
+            {new: true}
+        ).exec();
 
     }
 }

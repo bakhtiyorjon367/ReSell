@@ -14,6 +14,9 @@ import { lookUpAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationService } from '../notification/notification.service';
 
 
 @Injectable()
@@ -23,6 +26,7 @@ export class BoardArticleService {
     private  memberService:MemberService,
     private  viewService: ViewService,
     private likeService: LikeService,
+    private notificationService:NotificationService,
     ) {}
 
 
@@ -138,7 +142,31 @@ export class BoardArticleService {
 
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         
+        const receiverId =  await this.getMemberId(input.likeRefId)
+        const notification:NotificationInput= {
+            notificationType: NotificationType.LIKE,
+            notificationGroup: NotificationGroup.ARTICLE,
+            notificationTitle: 'Someone liked your article',
+            authorId: memberId,
+            receiverId: receiverId,
+            productId: null,
+            articleId: likeRefId
+        };
+        if(modifier === 1) {
+           await this.notificationService.createNotification(notification);
+        }else{
+            const input = {
+                authorId:memberId, 
+                receiverId:receiverId, 
+                articleId:likeRefId}
+            await this.notificationService.deleteNotification(input);
+        }
         return result;
+    }
+    public async getMemberId (articleId:ObjectId):Promise<ObjectId>{
+        const result = await this.boardArticleModel.findOne({_id:articleId})
+        if(!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result.memberId;
     }/*_____________________________________________________________________________________________________________________*/
 
     /*ADMIN */

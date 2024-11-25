@@ -11,6 +11,9 @@ import { CommentInput, CommentsInquiry } from '../../libs/dto/comment/comment.in
 import { lookupMember } from '../../libs/config';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationGroup, NotificationStatus, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class CommentService {
@@ -18,6 +21,7 @@ export class CommentService {
     private readonly memberService: MemberService,
     private readonly productService: ProductService,
     private readonly boardArticleService: BoardArticleService,
+    private readonly notificationService: NotificationService,
 ) {}
 
     public async createComment(memberId: ObjectId, input: CommentInput):Promise<Comment>{
@@ -32,26 +36,63 @@ export class CommentService {
 
         switch(input.commentGroup){
             case CommentGroup.PRODUCT:
-            await this.productService.productStatsEditor({
-            _id: input.commentRefId,
-                targetKey:'productComments',
-                modifier:1
-            });
-            case CommentGroup.ARTICLE:
-            await this.boardArticleService.boardArticleStatsEditior({
-            _id: input.commentRefId,
-                targetKey:'articleComments',
-                modifier:1
-            });
-            case CommentGroup.MEMBER:
-            await this.memberService.memberStatsEditior({
-            _id: input.commentRefId,
-                targetKey:'memberComments',
-                modifier:1
-            });
+                const productReceiverId = await this.productService.getMemberId(input.commentRefId);
+                const productNotification:NotificationInput= {
+                    notificationType: NotificationType.COMMENT,
+                    notificationGroup: NotificationGroup.PRODUCT,
+                    notificationTitle: 'Someone commented on your product',
+                    authorId: memberId,
+                    receiverId: productReceiverId,
+                    productId: input.commentRefId,
+                    articleId: null
+                };
+                await this.notificationService.createNotification(productNotification);
+            
+                await this.productService.productStatsEditor({
+                _id: input.commentRefId,
+                    targetKey:'productComments',
+                    modifier:1
+                });
             break;
-        }
+            case CommentGroup.ARTICLE:
+                const aReceiverId = await this.boardArticleService.getMemberId(input.commentRefId);
+                const articleNotification:NotificationInput= {
+                    notificationType: NotificationType.COMMENT,
+                    notificationGroup: NotificationGroup.ARTICLE,
+                    notificationTitle: 'Someone commented on your article',
+                    authorId: memberId,
+                    receiverId: aReceiverId,
+                    productId: null,
+                    articleId: input.commentRefId
+                };
+                await this.notificationService.createNotification(articleNotification);
+            
+                await this.boardArticleService.boardArticleStatsEditior({
+                _id: input.commentRefId,
+                    targetKey:'articleComments',
+                    modifier:1
+                });
+            break;
+            case CommentGroup.MEMBER:
+                const memberNotification:NotificationInput= {
+                    notificationType: NotificationType.COMMENT,
+                    notificationGroup: NotificationGroup.MEMBER,
+                    notificationTitle: 'Someone left comment on you',
+                    authorId: memberId,
+                    receiverId:  input.commentRefId,
+                    productId: null,
+                    articleId: null,
+                };
+                await this.notificationService.createNotification(memberNotification);
+                await this.memberService.memberStatsEditior({
+                _id: input.commentRefId,
+                    targetKey:'memberComments',
+                    modifier:1
+                });
+            break;
+        };
         if(!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
+        
         return result;
         
     }//____________________________________________________________________________________________________
@@ -68,8 +109,8 @@ export class CommentService {
             {new:true}
         ).exec();
         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        
         return result;
-
     }/*____________________________________________________________________________________________________*/
 
 
@@ -78,7 +119,6 @@ export class CommentService {
         const match:T = {commentRefId: commentRefId, commentStatus: CommentStatus.ACTIVE };
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
         
-        console.log('match', match);
 
         const result:Comments[] = await this.commentModel.aggregate([
             {$match: match},
