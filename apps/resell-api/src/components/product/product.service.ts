@@ -204,27 +204,30 @@ export class ProductService {
         const result = this.productStatsEditor({_id:likeRefId, targetKey:'productLikes', modifier:modifier});
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         
-        const product = await this.getProduct(null,likeRefId)
+        const product = await this.getProduct(null,likeRefId);
         const liker = await this.memberService.getMember(null, memberId);
         const receiverId =  await this.getMemberId(input.likeRefId)
-        const notification:NotificationInput= {
-            notificationType: NotificationType.LIKE,
-            notificationGroup: NotificationGroup.PRODUCT,
-            notificationTitle:  `${liker.memberNick} has liked your product '${product.productTitle}'`,
-            authorId: memberId,
-            receiverId: receiverId,
-            productId: likeRefId,
-            articleId: null
-        };
-        if(modifier === 1){
-            await this.notificationService.createNotification(notification);
-        }else{
-            const input = {
-                authorId:memberId, 
-                receiverId:receiverId, 
-                productId:likeRefId}
-            await this.notificationService.deleteNotification(input);
+        if(memberId.toString() !== receiverId.toString()){
+            const notification:NotificationInput= {
+                notificationType: NotificationType.LIKE,
+                notificationGroup: NotificationGroup.PRODUCT,
+                notificationTitle:  `${liker.memberNick} has liked your product '${product.productTitle}'`,
+                authorId: memberId,
+                receiverId: receiverId,
+                productId: likeRefId,
+                articleId: null
+            };
+            if(modifier === 1){
+                await this.notificationService.createNotification(notification);
+            }else{
+                const input = {
+                    authorId:memberId, 
+                    receiverId:receiverId, 
+                    productId:likeRefId}
+                await this.notificationService.deleteNotification(input);
+            }
         }
+       
         return result;
     }
     public async getMemberId (productId:ObjectId):Promise<ObjectId>{

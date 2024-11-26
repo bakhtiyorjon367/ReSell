@@ -141,28 +141,31 @@ export class BoardArticleService {
         const result = this.boardArticleStatsEditior({_id:likeRefId, targetKey:'articleLikes', modifier:modifier});
 
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
-        
+
         const article = await this.getBoardArticle(null,likeRefId)
         const liker = await this.memberService.getMember(null, memberId);
         const receiverId =  await this.getMemberId(input.likeRefId)
-        const notification:NotificationInput= {
-            notificationType: NotificationType.LIKE,
-            notificationGroup: NotificationGroup.ARTICLE,
-            notificationTitle:  `${liker.memberNick} has liked your article '${article.articleTitle}'`,
-            authorId: memberId,
-            receiverId: receiverId,
-            productId: null,
-            articleId: likeRefId
-        };
-        if(modifier === 1) {
-           await this.notificationService.createNotification(notification);
-        }else{
-            const input = {
-                authorId:memberId, 
-                receiverId:receiverId, 
-                articleId:likeRefId}
-            await this.notificationService.deleteNotification(input);
+        if(memberId.toString() !== receiverId.toString()){
+            const notification:NotificationInput= {
+                notificationType: NotificationType.LIKE,
+                notificationGroup: NotificationGroup.ARTICLE,
+                notificationTitle:  `${liker.memberNick} has liked your article '${article.articleTitle}'`,
+                authorId: memberId,
+                receiverId: receiverId,
+                productId: null,
+                articleId: likeRefId
+            };
+            if(modifier === 1) {
+               await this.notificationService.createNotification(notification);
+            }else{
+                const input = {
+                    authorId:memberId, 
+                    receiverId:receiverId, 
+                    articleId:likeRefId}
+                await this.notificationService.deleteNotification(input);
+            }
         }
+        
         return result;
     }
     public async getMemberId (articleId:ObjectId):Promise<ObjectId>{
