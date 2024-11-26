@@ -48,12 +48,13 @@ export class NotificationService {
         const result = await this.notificationModel.findOneAndUpdate(
             {
                 _id:_id,
-                receiverId:memberId,
-                notificationStatus:NotificationStatus.WAIT
+                receiverId:memberId
             },
             input,
             {new:true}
         ).exec();
+        console.log('input--->',input)
+        console.log('result--->',result)
         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         return result;
     }

@@ -142,11 +142,13 @@ export class BoardArticleService {
 
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         
+        const article = await this.getBoardArticle(null,likeRefId)
+        const liker = await this.memberService.getMember(null, memberId);
         const receiverId =  await this.getMemberId(input.likeRefId)
         const notification:NotificationInput= {
             notificationType: NotificationType.LIKE,
             notificationGroup: NotificationGroup.ARTICLE,
-            notificationTitle: 'Someone liked your article',
+            notificationTitle:  `${liker.memberNick} has liked your article '${article.articleTitle}'`,
             authorId: memberId,
             receiverId: receiverId,
             productId: null,

@@ -158,10 +158,11 @@ export class MemberService {
 
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         
+        const liker = await this.getMember(null, memberId);
         const notification:NotificationInput= {
             notificationType: NotificationType.LIKE,
             notificationGroup: NotificationGroup.MEMBER,
-            notificationTitle: 'Someone has liked you',
+            notificationTitle: `${liker.memberNick} has liked you`,
             authorId: memberId,
             receiverId: likeRefId,
             productId: null,
