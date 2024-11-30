@@ -144,7 +144,7 @@ export class ProductService {
         } else if (productSharing === false) {
             match.productSharing = false;
         }
-        if(options) {
+        if(options && options.length > 0) {
             match['$or'] = options.map((ele) => {
                 return { [ele]: true};
             });
