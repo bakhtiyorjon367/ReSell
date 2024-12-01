@@ -5,6 +5,8 @@ services:
     container_name: resell-api
     restart: always
     image: node:20.10.0
+    environment:
+      - TZ=Asia/Seoul
     ports:
       - 4001:3010
     volumes:
@@ -20,6 +22,8 @@ services:
     container_name: resell-batch
     restart: unless-stopped
     image: node:20.10.0
+    environment:
+      - TZ=Asia/Seoul
     ports:
       - 4002:3011
     volumes:

@@ -1,6 +1,6 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { ResellBatchService } from './resell-batch.service';
-import { Cron, Interval, Timeout } from '@nestjs/schedule';
+import { Cron,  Timeout } from '@nestjs/schedule';
 import { BATCH_ROLLBACK, BATCH_ACTIVE_USERS, BATCH_TOP_PRODUCTS } from './lib/config';
 
 @Controller()
