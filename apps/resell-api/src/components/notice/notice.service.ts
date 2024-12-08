@@ -36,7 +36,6 @@ export class NoticeService {
         const search:T= { _id:noticeId }
         const result = await this.noticeModel.findOne(search).exec();
         if(!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-        console.log('notice', result)
         return result;
     }
 
@@ -62,7 +61,6 @@ export class NoticeService {
             },
         ]).exec();
         if(!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-        console.log(result[0])
         return result[0];
 
     }

@@ -25,7 +25,6 @@ export class NoticeResolver {
     ):Promise<Notice>{
         console.log("Mutation: createNotice");
         input.memberId = memberId;
-        console.log('input-->', input);
         return await this.noticeService.createNotice(input);
     }
 

@@ -52,8 +52,6 @@ export class BoardArticleService {
             _id:articleId,
             articleStatus: BoardArticleStatus.ACTIVE
             };
-        console.log(memberId)
-        console.log(articleId)
         const targetBoardArticle : BoardArticle = await this.boardArticleModel.findOne(search).exec();
         if(!targetBoardArticle) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         
@@ -106,7 +104,6 @@ export class BoardArticleService {
         if(input.search?.memberId) {
             match.memberId = shapeIntoMongoObjectId(input.search?.memberId);
         };
-        console.log('match', match);
         
         const result = await this.boardArticleModel.aggregate([
             {$match: match},
@@ -182,7 +179,6 @@ export class BoardArticleService {
         
         if(articleStatus) match.articleStatus = articleStatus;
         if(articleCategory) match.articleCategory = articleCategory;
-        console.log('match', match);
         
         const result = await this.boardArticleModel.aggregate([
             {$match: match},

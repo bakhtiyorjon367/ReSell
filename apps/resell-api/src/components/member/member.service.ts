@@ -122,7 +122,6 @@ export class MemberService {
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
         const metaCounter=0;
         if(text){ match.memberNick = {$regex: new RegExp(text, "i")} };
-        console.log('match', match);
 
         const result = await this.memberModel.aggregate([
             {$match: match},
@@ -171,7 +170,6 @@ export class MemberService {
             };
             if(modifier === 1){
                const result =  await this.notificationService.createNotification(notification);
-               console.log('result ----->',result);
             }else{
                 const input = {
                     authorId:memberId, 
@@ -196,7 +194,6 @@ export class MemberService {
         if(memberStatus) match.memberStatus = memberStatus;
         if(memberType) match.memberType = memberType;
         if(text){ match.memberNick = {$regex: new RegExp(text, "i")} };
-        console.log('match', match);
 
         const result = await this.memberModel.aggregate([
             {$match: match},

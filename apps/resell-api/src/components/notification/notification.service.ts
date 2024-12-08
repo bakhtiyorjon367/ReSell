@@ -53,8 +53,6 @@ export class NotificationService {
             input,
             {new:true}
         ).exec();
-        console.log('input--->',input)
-        console.log('result--->',result)
         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         return result;
     }

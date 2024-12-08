@@ -28,7 +28,6 @@ export class LikeService {
                 throw new InternalServerErrorException(Message.CREATE_FAILED);
             }
         }
-        console.log(`-LikeModifier- ${modifier}-`)
         return modifier;
     }//____________________________________________________________________________________________________
 

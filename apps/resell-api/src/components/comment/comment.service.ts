@@ -13,7 +13,7 @@ import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
 import { NotificationService } from '../notification/notification.service';
 import { NotificationInput } from '../../libs/dto/notification/notification.input';
-import { NotificationGroup, NotificationStatus, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class CommentService {

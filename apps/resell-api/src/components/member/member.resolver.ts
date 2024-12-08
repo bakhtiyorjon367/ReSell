@@ -22,7 +22,7 @@ export class MemberResolver {
 
     @Mutation(() => Member)
     public async signup(@Args('input') input: MemberInput):Promise<Member>{
-        console.log("Mutation: signup", input);
+        console.log("Mutation: signup");
         return this.memberService.signup(input);
     };
 
@@ -165,7 +165,6 @@ export class MemberResolver {
                 const imageName = getSerialForImage(filename);
                 const url = `uploads/${target}/${imageName}`;
                 const stream = createReadStream();
-                console.log("is here ");
                 const result = await new Promise((resolve, reject) => {
                     stream
                         .pipe(createWriteStream(url))
@@ -181,8 +180,6 @@ export class MemberResolver {
         });
 
         await Promise.all(promisedList);
-        console.log(uploadedImages);
-        console.log(promisedList);
         return uploadedImages;
     }
 }

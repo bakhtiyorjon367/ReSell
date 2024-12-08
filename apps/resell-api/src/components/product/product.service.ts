@@ -101,7 +101,6 @@ export class ProductService {
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
         this.shapeMatchQuery (match, input);
-        console.log('match', match);
 
         const result = await this.productModel.
         aggregate([
@@ -168,7 +167,6 @@ export class ProductService {
             productStatus: productStatus ?? {$ne: ProductStatus.DELETE},
         };
         const sort:T ={ [input?.sort  ?? 'createdAt']: input?.direction ?? Direction.DESC };
-        console.log('match-->',match)
         const result = await this.productModel.
         aggregate([
             {$match: match},
